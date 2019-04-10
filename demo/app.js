@@ -1,72 +1,40 @@
 'use strict';
 
-// nav handler
-$('nav a').on('click', function () {
-  let $whereToGo = $(this).data('tab');
-  // what is $whereToGo
-  // gives us 'delegation' or 'attributes'
-  console.log('$where to go', $whereToGo);
-  $('.tab-content').hide();
-  // we want $('#delegation')
-  $('#' + $whereToGo).fadeIn(750)
-})
-
-// event logger
-function logTarget() {
-  console.log('this', this);
-  console.log('$(this)', $(this));
-
-  let $target = $(this).text();
-  let $newFeedback = $('#feedback p:first-child').clone();
-
-  $newFeedback.text(`You clicked on ${$target}`);
-  $('#feedback').append($newFeedback);
+function Dog(dog) {
+  this.name = dog.name;
+  this.image_url = dog.image_url;
+  this.hobbies = dog.hobbies;
 }
 
-// not delegated - event bound to all the 'li's that exist on page load
-// no selector specified in .on() method
-$('#menu-main').on('click', 'li', logTarget)
+Dog.allDogs = [];
 
-// delegated - event is bound to parent
-// 'li' is specified in .on()
-$('#menu-secondary').on('click', 'li', logTarget)
+Dog.prototype.render = function() {
+  $('main').append('<div class="clone"></div>');
+  let dogClone = $('div[class="clone"]');
 
-// button handlers
-$('button[name=add-main]').on('click', function () {
-  //.clone & .append allows you to make a copy of exisitng elements, (modify the new element), and append to the DOM
-  let $newLi1 = $('#menu-main li:first').clone();
-  $newLi1.text('New primary list item');
-  $('#menu-main').append($newLi1);
-});
+  let dogHtml = $('#dog-template').html();
 
-$('button[name=add-secondary]').on('click', function () {
-  let $newLi2 = $('#menu-secondary li:first').clone();
-  $newLi2.text('New secondary list item');
-  $('#menu-secondary').append($newLi2);
-});
+  dogClone.html(dogHtml)
 
-// .siblings allows you to identify and manipulate the sibling elements
-$('button[name=clear]').on('click', function () {
-  $('.log-item:first').siblings().remove();
-});
+  dogClone.find('h2').text(this.name);
+  dogClone.find('img').attr('src', this.image_url);
+  dogClone.find('p').text(this.hobbies);
+  dogClone.removeClass('clone');
+  dogClone.attr('class', this.name);
+}
 
-// checkbox handler - change event.
-// shows difference between attr & prop
-$('input[name=check]').on('change', function () {
-  let $checkbox = $(this);
+Dog.readJson = () => {
+  $.get('data.json', 'json')
+    .then(data => {
+      data.forEach(item => {
+        Dog.allDogs.push(new Dog(item));
+      })
+    })
+    .then(Dog.loadDogs)
+}
 
-  $('#checked-state').html('.attr("checked"): ' + $checkbox.attr('checked') + '<br>.prop( "checked" ): ' + $checkbox.prop('checked'));
+Dog.loadDogs = () => {
+  Dog.allDogs.forEach(dog => dog.render())
+}
 
-}).change();
-
-// select box filtering
-$('select[name="icecream"]').on('change', function () {
-  let $selection = $(this).val();
-  $('img').hide()
-  $(`img[data-flavor="${$selection}"]`).show()
-})
-
-// DOM-ready function
-$(document).ready(function () {
-  $('.tab-content').hide()
-})
+$(() => Dog.readJson());
