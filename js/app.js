@@ -73,7 +73,7 @@ Horn.handleFilter = () => {
 
       $(`option[value=${$selected}]`).fadeIn();
     } else {
-			console.log('test');
+      console.log('test');
       $('div')
         .removeClass('filtered')
         .fadeIn();
