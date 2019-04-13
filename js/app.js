@@ -13,16 +13,12 @@ Horn.allHorns = [];
 Horn.prototype.render = function() {
   $('main').append('<div class="clone"></div>');
   let hornClone = $('div[class="clone"]');
-
-  let hornHtml = $('#photo-template').html();
-
-  hornClone.html(hornHtml);
-
+  hornClone.html($('#photo-template').html());
   hornClone.find('h2').text(this.title);
   hornClone.find('img').attr('src', this.image_url);
   hornClone.find('p').text(this.description);
   hornClone.removeClass('clone');
-  hornClone.attr('class', this.title);
+  hornClone.attr('class', this.keyword);
 };
 
 Horn.readJson = () => {
@@ -67,7 +63,7 @@ Horn.handleFilter = () => {
 
       Horn.allHorns.forEach(horn => {
         if ($selected === horn.keyword) {
-          $(`div [class="${$selected}"]`).addClass('filtered').fadeIn();
+          $(`div[class="${$selected}"`).addClass('filtered').fadeIn();
         }
       });
 
